@@ -21,6 +21,7 @@
         }
     ],
     "require": {
-        "opulence/opulence": "^1.0"
+        "opulence/opulence": "^1.0",
+        "filp/whoops": "^2.1"
     }
 }

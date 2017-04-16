@@ -2,27 +2,17 @@
 
 namespace Foo\Debug\Exceptions\Handlers\Whoops;
 
-use Monolog\Logger;
-use Opulence\Debug\Exceptions\Handlers\IExceptionHandler;
+use Psr\Log\LoggerInterface;
+use Opulence\Debug\Exceptions\Handlers;
 use Throwable;
 
-class ExceptionHandler implements IExceptionHandler
+class ExceptionHandler extends Handlers\ExceptionHandler
 {
-    /** @var Logger */
+    /** @var LoggerInterface */
     protected $logger;
 
     /** @var ExceptionRenderer */
-    protected $whoopsRenderer;
-
-    /**
-     * @param Logger            $logger
-     * @param ExceptionRenderer $whoopsRenderer
-     * @param array             $exceptionsSkipped
-     */
-    public function __construct(Logger $logger, ExceptionRenderer $whoopsRenderer, array $exceptionsSkipped)
-    {
-        $this->whoopsRenderer = $whoopsRenderer;
-    }
+    protected $exceptionRenderer;
 
     /**
      * Handles an exception
@@ -31,7 +21,7 @@ class ExceptionHandler implements IExceptionHandler
      */
     public function handle($ex)
     {
-        $this->whoopsRenderer->render($ex);
+        $this->exceptionRenderer->render($ex);
     }
 
     /**
@@ -39,14 +29,14 @@ class ExceptionHandler implements IExceptionHandler
      */
     public function register()
     {
-        $whoops = $this->whoopsRenderer->getRun();
+        $renderer = $this->exceptionRenderer->getRun();
 
         if (php_sapi_name() === 'cli') {
-            $whoops->pushHandler(new \Whoops\Handler\PlainTextHandler($this->logger));
+            $renderer->pushHandler(new \Whoops\Handler\PlainTextHandler($this->logger));
         } else {
-            $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+            $renderer->pushHandler(new \Whoops\Handler\PrettyPageHandler());
         }
 
-        $whoops->register();
+        $renderer->register();
     }
 }
