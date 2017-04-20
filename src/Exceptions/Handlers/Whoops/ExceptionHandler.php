@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Foo\Debug\Exceptions\Handlers\Whoops;
 
 use Psr\Log\LoggerInterface;
@@ -13,6 +15,29 @@ class ExceptionHandler extends Handlers\ExceptionHandler
 
     /** @var ExceptionRenderer */
     protected $exceptionRenderer;
+
+    /** @var bool */
+    protected $isCli = false;
+
+    /**
+     * @return bool
+     */
+    public function getIsCli(): bool
+    {
+        if (null === $this->isCli) {
+            $this->isCli = (php_sapi_name() === 'cli');
+        }
+
+        return $this->isCli;
+    }
+
+    /**
+     * @param bool $isCli
+     */
+    public function setIsCli(bool $isCli)
+    {
+        $this->isCli = $isCli;
+    }
 
     /**
      * Handles an exception
@@ -31,7 +56,7 @@ class ExceptionHandler extends Handlers\ExceptionHandler
     {
         $renderer = $this->exceptionRenderer->getRun();
 
-        if (php_sapi_name() === 'cli') {
+        if ($this->getIsCli()) {
             $renderer->pushHandler(new \Whoops\Handler\PlainTextHandler($this->logger));
         } else {
             $renderer->pushHandler(new \Whoops\Handler\PrettyPageHandler());

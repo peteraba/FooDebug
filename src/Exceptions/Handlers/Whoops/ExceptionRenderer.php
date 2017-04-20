@@ -1,23 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Foo\Debug\Exceptions\Handlers\Whoops;
 
 use Exception;
 use Opulence\Framework\Debug\Exceptions\Handlers\Http;
 use Throwable;
-use Whoops\Run;
+use Whoops\RunInterface;
 
 class ExceptionRenderer extends Http\ExceptionRenderer implements Http\IExceptionRenderer
 {
-    /** @var Run */
+    /** @var RunInterface */
     protected $run;
 
     /**
      * WhoopsRenderer constructor.
      *
-     * @param Run $run
+     * @param RunInterface $run
+     * @param bool         $inDevelopmentEnvironment
      */
-    public function __construct(Run $run, bool $inDevelopmentEnvironment = false)
+    public function __construct(RunInterface $run, bool $inDevelopmentEnvironment = false)
     {
         $this->run = $run;
 
@@ -25,7 +28,7 @@ class ExceptionRenderer extends Http\ExceptionRenderer implements Http\IExceptio
     }
 
     /**
-     * @return Run
+     * @return RunInterface
      */
     public function getRun()
     {
